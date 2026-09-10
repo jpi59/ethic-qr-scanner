@@ -1,5 +1,6 @@
 package org.jpi59.ethicqrscanner;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,11 +13,37 @@ import android.view.View;
 /** Original camera framing overlay. */
 final class ScannerOverlayView extends View {
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private ValueAnimator scanAnimator;
+    private float scanProgress;
 
     ScannerOverlayView(Context context) {
         super(context);
         // CLEAR gives the camera a single, unambiguous scanning window.
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        scanAnimator = ValueAnimator.ofFloat(0f, 1f);
+        scanAnimator.setDuration(1800L);
+        scanAnimator.setStartDelay(250L);
+        scanAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        scanAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        scanAnimator.addUpdateListener(animation -> {
+            scanProgress = (float) animation.getAnimatedValue();
+            invalidate();
+        });
+        scanAnimator.start();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if (scanAnimator != null) {
+            scanAnimator.cancel();
+            scanAnimator = null;
+        }
+        super.onDetachedFromWindow();
     }
 
     @Override
@@ -50,8 +77,9 @@ final class ScannerOverlayView extends View {
         canvas.drawLine(left + size - corner, top + size, left + size, top + size, paint);
         canvas.drawLine(left + size, top + size - corner, left + size, top + size, paint);
         paint.setStrokeCap(Paint.Cap.BUTT);
-        paint.setColor(0xBFE8C98D);
-        canvas.drawLine(left + size * 0.16f, top + size / 2f, left + size * 0.84f, top + size / 2f, paint);
+        paint.setColor(0xFFE8B36B);
+        float scanY = top + size * (0.16f + scanProgress * 0.68f);
+        canvas.drawLine(left + size * 0.16f, scanY, left + size * 0.84f, scanY, paint);
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.WHITE);
         paint.setTextAlign(Paint.Align.CENTER);
