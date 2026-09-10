@@ -9,6 +9,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 
 /** Original camera framing overlay. */
 final class ScannerOverlayView extends View {
@@ -29,10 +30,11 @@ final class ScannerOverlayView extends View {
         scanAnimator.setDuration(1800L);
         scanAnimator.setStartDelay(250L);
         scanAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        scanAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        scanAnimator.setRepeatMode(ValueAnimator.RESTART);
+        scanAnimator.setInterpolator(new LinearInterpolator());
         scanAnimator.addUpdateListener(animation -> {
             scanProgress = (float) animation.getAnimatedValue();
-            invalidate();
+            postInvalidateOnAnimation();
         });
         scanAnimator.start();
     }
@@ -77,8 +79,12 @@ final class ScannerOverlayView extends View {
         canvas.drawLine(left + size - corner, top + size, left + size, top + size, paint);
         canvas.drawLine(left + size, top + size - corner, left + size, top + size, paint);
         paint.setStrokeCap(Paint.Cap.BUTT);
-        paint.setColor(0xFFE8B36B);
+        paint.setColor(0x66FFB74D);
         float scanY = top + size * (0.16f + scanProgress * 0.68f);
+        paint.setStrokeWidth(Math.max(8f, w / 48f));
+        canvas.drawLine(left + size * 0.16f, scanY, left + size * 0.84f, scanY, paint);
+        paint.setColor(0xFFFFB74D);
+        paint.setStrokeWidth(Math.max(4f, w / 92f));
         canvas.drawLine(left + size * 0.16f, scanY, left + size * 0.84f, scanY, paint);
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.WHITE);

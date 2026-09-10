@@ -68,6 +68,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     private Camera camera;
     private DecodeAnalyzer decoder;
     private TorchButtonView torchButton;
+    private PhotoButtonView photoButton;
     private final ExecutorService analysisExecutor = Executors.newSingleThreadExecutor();
 
     @Override
@@ -237,6 +238,12 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         FrameLayout.LayoutParams torchParams = new FrameLayout.LayoutParams(
                 dp(64), dp(64), Gravity.CENTER_HORIZONTAL | Gravity.TOP);
         root.addView(torchButton, torchParams);
+        photoButton = new PhotoButtonView(this);
+        photoButton.setContentDescription("Elegir una foto guardada para leer un código");
+        photoButton.setOnClickListener(v -> photoPicker.launch("image/*"));
+        FrameLayout.LayoutParams photoParams = new FrameLayout.LayoutParams(
+                dp(64), dp(64), Gravity.LEFT | Gravity.TOP);
+        root.addView(photoButton, photoParams);
         root.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             int width = right - left;
             int height = bottom - top;
@@ -245,6 +252,10 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) torchButton.getLayoutParams();
             params.topMargin = frameTop + Math.round(frameSize) + dp(16);
             torchButton.setLayoutParams(params);
+            FrameLayout.LayoutParams photoLayout = (FrameLayout.LayoutParams) photoButton.getLayoutParams();
+            photoLayout.topMargin = params.topMargin;
+            photoLayout.leftMargin = width / 2 + dp(44);
+            photoButton.setLayoutParams(photoLayout);
         });
 
         setContentView(root);
