@@ -1,0 +1,7 @@
+Ethic QR Scanner reads QR codes and common barcodes using the device camera.
+
+Decoded content remains on the device. The app has no account, tracking,
+advertising or network permission.
+
+Links are displayed for review and require a separate choice before a browser
+can be opened. The app does not claim to judge whether a link is safe.

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ethic QR Scanner</string>
+    <string name="camera_permission_explanation">La cámara se usa solo mientras eliges escanear un código. Las imágenes y el contenido detectado permanecen en este teléfono.</string>
+    <string name="camera_unavailable">Este dispositivo no tiene una cámara disponible.</string>
+    <string name="permission_needed">Se necesita acceso a la cámara para escanear un código.</string>
+    <string name="scan_again">Escanear de nuevo</string>
+    <string name="copy">Copiar</string>
+    <string name="open_browser">Abrir navegador</string>
+    <string name="transparency_dialog_title">Transparencia</string>
+    <string name="transparency_dialog_message">Permiso: CAMERA solo se solicita cuando eliges escanear.\n\nDatos: las imágenes y el contenido detectado permanecen en memoria en este teléfono. No hay cuenta, rastreo, anuncios, permiso de red ni historial de escaneos.\n\nEnlaces: un enlace HTTP(S) se muestra primero y solo se abre tras una decisión aparte. La app no afirma verificar la seguridad del sitio.\n\nLicencia: el código original está bajo GPL-3.0-or-later. CameraX/AndroidX y ZXing Core aparecen atribuidos en los avisos del código fuente.</string>
+</resources>

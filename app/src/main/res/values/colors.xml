@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ink">#102428</color>
+    <color name="night">#0C1C20</color>
+    <color name="night_elevated">#153136</color>
+    <color name="teal">#8DE5D0</color>
+    <color name="sand">#E8C98D</color>
+    <color name="mist">#D7E6E4</color>
+    <color name="muted">#9FB8B5</color>
+    <color name="warning">#F2C66D</color>
+</resources>

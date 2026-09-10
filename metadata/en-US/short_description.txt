@@ -1,0 +1,1 @@
+An offline QR and barcode scanner that never opens links automatically.
