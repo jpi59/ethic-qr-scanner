@@ -94,7 +94,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         eyebrow.setLetterSpacing(0.14f);
         content.addView(eyebrow);
 
-        TextView title = text("QR Scan", 45, Color.WHITE);
+        TextView title = text("QR Scanner", 45, Color.WHITE);
         title.setPadding(0, dp(8), 0, 0);
         content.addView(title);
 
