@@ -1,6 +1,5 @@
 package org.jpi59.ethicqrscanner;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,13 +8,23 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
 
 /** Original camera framing overlay. */
 final class ScannerOverlayView extends View {
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private ValueAnimator scanAnimator;
     private float scanProgress;
+    private final Runnable scanFrame = new Runnable() {
+        @Override
+        public void run() {
+            if (!isAttachedToWindow()) return;
+            scanProgress += 0.0125f;
+            if (scanProgress >= 1f) {
+                scanProgress = 0f;
+            }
+            postInvalidateOnAnimation();
+            postDelayed(this, 16L);
+        }
+    };
 
     ScannerOverlayView(Context context) {
         super(context);
@@ -26,25 +35,13 @@ final class ScannerOverlayView extends View {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        scanAnimator = ValueAnimator.ofFloat(0f, 1f);
-        scanAnimator.setDuration(1800L);
-        scanAnimator.setStartDelay(250L);
-        scanAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        scanAnimator.setRepeatMode(ValueAnimator.RESTART);
-        scanAnimator.setInterpolator(new LinearInterpolator());
-        scanAnimator.addUpdateListener(animation -> {
-            scanProgress = (float) animation.getAnimatedValue();
-            postInvalidateOnAnimation();
-        });
-        scanAnimator.start();
+        scanProgress = 0f;
+        postDelayed(scanFrame, 250L);
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        if (scanAnimator != null) {
-            scanAnimator.cancel();
-            scanAnimator = null;
-        }
+        removeCallbacks(scanFrame);
         super.onDetachedFromWindow();
     }
 

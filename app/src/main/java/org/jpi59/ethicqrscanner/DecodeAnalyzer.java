@@ -10,6 +10,8 @@ import com.google.zxing.DecodeHintType;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.common.GlobalHistogramBinarizer;
 import com.google.zxing.common.HybridBinarizer;
 
 import java.nio.ByteBuffer;
@@ -53,7 +55,14 @@ final class DecodeAnalyzer implements ImageAnalysis.Analyzer {
             PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(
                     luma, rowStride, image.getHeight(), 0, 0,
                     image.getWidth(), image.getHeight(), false);
-            Result result = new MultiFormatReader().decode(new BinaryBitmap(new HybridBinarizer(source)), hints);
+            Result result = decode(source);
+            int rotation = image.getImageInfo().getRotationDegrees();
+            if (result == null && rotation == 90) result = decode(source.rotateCounterClockwise());
+            if (result == null && rotation == 180) result = decode(source.rotateCounterClockwise().rotateCounterClockwise());
+            if (result == null && rotation == 270) {
+                result = decode(source.rotateCounterClockwise().rotateCounterClockwise()
+                        .rotateCounterClockwise());
+            }
             if (result != null && result.getText() != null && paused.compareAndSet(false, true)) {
                 callback.onDecoded(result.getText());
             }
@@ -61,6 +70,18 @@ final class DecodeAnalyzer implements ImageAnalysis.Analyzer {
             // Most camera frames do not contain a code. This is expected.
         } finally {
             image.close();
+        }
+    }
+
+    private Result decode(LuminanceSource source) {
+        try {
+            return new MultiFormatReader().decode(new BinaryBitmap(new HybridBinarizer(source)), hints);
+        } catch (Exception first) {
+            try {
+                return new MultiFormatReader().decode(new BinaryBitmap(new GlobalHistogramBinarizer(source)), hints);
+            } catch (Exception second) {
+                return null;
+            }
         }
     }
 }

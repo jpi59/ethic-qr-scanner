@@ -21,6 +21,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.text.util.Linkify;
+import android.text.method.LinkMovementMethod;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,7 +58,6 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
                     showScanner();
                 } else {
                     showHome();
-                    Toast.makeText(this, getString(R.string.permission_needed), Toast.LENGTH_LONG).show();
                 }
             });
     private final ActivityResultLauncher<String> photoPicker = registerForActivityResult(
@@ -76,7 +77,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         super.onCreate(savedInstanceState);
         getWindow().setStatusBarColor(color(R.color.night));
         getWindow().setNavigationBarColor(color(R.color.night));
-        showHome();
+        requestCameraForScanning();
     }
 
     private void showHome() {
@@ -236,7 +237,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         torchButton.setContentDescription("Encender o apagar la luz de la cámara trasera");
         torchButton.setOnClickListener(v -> toggleTorch());
         FrameLayout.LayoutParams torchParams = new FrameLayout.LayoutParams(
-                dp(64), dp(64), Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+                dp(64), dp(64), Gravity.LEFT | Gravity.TOP);
         root.addView(torchButton, torchParams);
         photoButton = new PhotoButtonView(this);
         photoButton.setContentDescription("Elegir una foto guardada para leer un código");
@@ -249,12 +250,14 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
             int height = bottom - top;
             float frameSize = Math.min(width * 0.78f, height * 0.48f);
             int frameTop = Math.round((height - frameSize) * 0.45f);
+            int groupLeft = (width - dp(144)) / 2;
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) torchButton.getLayoutParams();
             params.topMargin = frameTop + Math.round(frameSize) + dp(16);
+            params.leftMargin = groupLeft;
             torchButton.setLayoutParams(params);
             FrameLayout.LayoutParams photoLayout = (FrameLayout.LayoutParams) photoButton.getLayoutParams();
             photoLayout.topMargin = params.topMargin;
-            photoLayout.leftMargin = width / 2 + dp(44);
+            photoLayout.leftMargin = groupLeft + dp(80);
             photoButton.setLayoutParams(photoLayout);
         });
 
@@ -297,10 +300,22 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         String classification = link
                 ? "Enlace detectado. Revísalo antes de abrirlo; la aplicación no comprobará su reputación en internet."
                 : "Contenido detectado. Puedes copiarlo; no se enviará fuera de este teléfono.";
-        String displayed = content.length() > 1600 ? content.substring(0, 1600) + "…" : content;
+        String displayed = content.length() > 4000 ? content.substring(0, 4000) + "…" : content;
+        LinearLayout result = new LinearLayout(this);
+        result.setOrientation(LinearLayout.VERTICAL);
+        TextView explanation = text(classification, 15, color(R.color.muted));
+        explanation.setPadding(0, 0, 0, dp(12));
+        result.addView(explanation);
+        TextView value = text(displayed, 17, Color.WHITE);
+        value.setTextIsSelectable(true);
+        Linkify.addLinks(value, Linkify.WEB_URLS);
+        value.setMovementMethod(LinkMovementMethod.getInstance());
+        value.setLinkTextColor(color(R.color.teal));
+        result.addView(value, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         AlertDialog.Builder dialog = new AlertDialog.Builder(this)
                 .setTitle("Contenido detectado")
-                .setMessage(classification + "\n\n" + displayed)
+                .setView(result)
                 .setNegativeButton(getString(R.string.scan_again), (d, w) -> resumeScanning())
                 .setNeutralButton(getString(R.string.copy), (d, w) -> copy(content));
         if (link) {
