@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.text.util.Linkify;
 import android.text.method.LinkMovementMethod;
+import android.text.Layout;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -308,10 +309,19 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         result.addView(explanation);
         TextView value = text(displayed, 17, Color.WHITE);
         value.setTextIsSelectable(true);
+        value.setHorizontallyScrolling(false);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            value.setBreakStrategy(Layout.BREAK_STRATEGY_BALANCED);
+            value.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
+        }
         Linkify.addLinks(value, Linkify.WEB_URLS);
         value.setMovementMethod(LinkMovementMethod.getInstance());
         value.setLinkTextColor(color(R.color.teal));
-        result.addView(value, new LinearLayout.LayoutParams(
+        ResultScrollView scroll = new ResultScrollView(this);
+        scroll.setFillViewport(false);
+        scroll.addView(value, new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        result.addView(scroll, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         AlertDialog.Builder dialog = new AlertDialog.Builder(this)
                 .setTitle("Contenido detectado")
