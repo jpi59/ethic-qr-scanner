@@ -11,6 +11,8 @@ asked to open a browser.
 
 - No account, analytics, advertising, network permission, or embedded web view.
 - Camera access is requested only after the person selects **Escanear código**.
+- A photo can be selected through Android's system picker; it is decoded in
+  memory without storage permission and is not saved by the app.
 - Frames are decoded in memory and are not saved or transmitted.
 - No scan history is included in version 1.0.0.
 - Copying a result uses Android's local clipboard service; the system may expose

@@ -6,6 +6,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -36,6 +38,10 @@ import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
 
 /**
  * A local-only QR and barcode scanner. Decoded text is never sent to a service
@@ -53,6 +59,8 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
                     Toast.makeText(this, getString(R.string.permission_needed), Toast.LENGTH_LONG).show();
                 }
             });
+    private final ActivityResultLauncher<String> photoPicker = registerForActivityResult(
+            new ActivityResultContracts.GetContent(), this::decodePhoto);
 
     private FrameLayout root;
     private PreviewView previewView;
@@ -122,6 +130,13 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         scanParams.topMargin = dp(18);
         content.addView(scan, scanParams);
 
+        Button photo = button("Cargar foto", Color.TRANSPARENT, color(R.color.teal));
+        photo.setOnClickListener(v -> photoPicker.launch("image/*"));
+        LinearLayout.LayoutParams photoParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(48));
+        photoParams.topMargin = dp(6);
+        content.addView(photo, photoParams);
+
         TextView footer = text("Los enlaces nunca se abren automáticamente.", 13, color(R.color.muted));
         footer.setGravity(Gravity.CENTER);
         footer.setPadding(0, dp(17), 0, 0);
@@ -135,6 +150,46 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
                 .setMessage(R.string.transparency_dialog_message)
                 .setPositiveButton(android.R.string.ok, null)
                 .show();
+    }
+
+    private void decodePhoto(Uri uri) {
+        if (uri == null) return;
+        Toast.makeText(this, getString(R.string.reading_photo), Toast.LENGTH_SHORT).show();
+        analysisExecutor.execute(() -> {
+            String decoded = null;
+            try {
+                Bitmap original = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                if (original != null) {
+                    int max = 1600;
+                    float scale = Math.min(1f, max / (float) Math.max(original.getWidth(), original.getHeight()));
+                    Bitmap bitmap = scale < 1f ? Bitmap.createScaledBitmap(original,
+                            Math.round(original.getWidth() * scale), Math.round(original.getHeight() * scale), true) : original;
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+                    int[] pixels = new int[width * height];
+                    bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+                    RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
+                    decoded = new MultiFormatReader().decode(
+                            new BinaryBitmap(new HybridBinarizer(source))).getText();
+                    if (bitmap != original) bitmap.recycle();
+                    original.recycle();
+                }
+            } catch (Exception ignored) {
+                // An image without a supported code is reported in the UI below.
+            }
+            String result = decoded;
+            runOnUiThread(() -> {
+                if (result == null || result.isEmpty()) {
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.no_code_title)
+                            .setMessage(R.string.no_code_message)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+                } else {
+                    showResult(result);
+                }
+            });
+        });
     }
 
     private void requestCameraForScanning() {

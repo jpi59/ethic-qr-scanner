@@ -12,6 +12,10 @@ No application network permission is declared. Ethic QR Scanner does not store a
 scan history, camera frame, account identifier, analytics event or advertisement
 identifier.
 
+The optional photo feature receives one image URI from Android's system picker,
+decodes it in memory, and releases it after the result. It does not request
+storage permission or retain a copy.
+
 ## Safety boundary
 
 An HTTP(S) link can still lead to a malicious website. This application does

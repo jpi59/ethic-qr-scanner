@@ -7,6 +7,9 @@
     <string name="scan_again">Escanear de nuevo</string>
     <string name="copy">Copiar</string>
     <string name="open_browser">Abrir navegador</string>
+    <string name="reading_photo">Leyendo la foto localmente…</string>
+    <string name="no_code_title">No se detectó ningún código</string>
+    <string name="no_code_message">No encontramos un código QR o de barras compatible en esa foto. La imagen no se guardó.</string>
     <string name="transparency_dialog_title">Transparencia</string>
     <string name="transparency_dialog_message">Permiso: CAMERA solo se solicita cuando eliges escanear.\n\nDatos: las imágenes y el contenido detectado permanecen en memoria en este teléfono. No hay cuenta, rastreo, anuncios, permiso de red ni historial de escaneos.\n\nEnlaces: un enlace HTTP(S) se muestra primero y solo se abre tras una decisión aparte. La app no afirma verificar la seguridad del sitio.\n\nLicencia: el código original está bajo GPL-3.0-or-later. CameraX/AndroidX y ZXing Core aparecen atribuidos en los avisos del código fuente.</string>
 </resources>
