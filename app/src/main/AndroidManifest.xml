@@ -9,6 +9,7 @@
 
     <application
         android:allowBackup="false"
+        android:icon="@drawable/ic_ethic_qr_scanner"
         android:label="@string/app_name"
         android:theme="@style/Theme.EthicQrScan"
         android:usesCleartextTraffic="false">

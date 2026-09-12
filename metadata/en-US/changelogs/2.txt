@@ -1,0 +1,1 @@
+Added a dedicated application icon for a clearer launcher and catalogue presence.
