@@ -76,12 +76,11 @@ final class ScannerOverlayView extends View {
         canvas.drawLine(left + size - corner, top + size, left + size, top + size, paint);
         canvas.drawLine(left + size, top + size - corner, left + size, top + size, paint);
         paint.setStrokeCap(Paint.Cap.BUTT);
-        paint.setColor(0x66FFB74D);
-        float scanY = top + size * (0.16f + scanProgress * 0.68f);
-        paint.setStrokeWidth(Math.max(8f, w / 48f));
-        canvas.drawLine(left + size * 0.16f, scanY, left + size * 0.84f, scanY, paint);
+        // Keep the scan guide crisp and stable: a single opaque stroke is easier
+        // to read than a translucent glow over the camera preview.
         paint.setColor(0xFFFFB74D);
-        paint.setStrokeWidth(Math.max(4f, w / 92f));
+        float scanY = top + size * (0.16f + scanProgress * 0.68f);
+        paint.setStrokeWidth(Math.max(3f, w / 120f));
         canvas.drawLine(left + size * 0.16f, scanY, left + size * 0.84f, scanY, paint);
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.WHITE);

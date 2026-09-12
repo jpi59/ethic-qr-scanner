@@ -2,7 +2,7 @@
 
 ## Data flow
 
-1. The person taps **Escanear código**.
+1. The scanner opens as the app's primary function.
 2. Android asks for the camera permission when necessary.
 3. Camera frames are supplied to ZXing in memory for local decoding.
 4. The decoded string is displayed locally. It can be copied or, for a valid
@@ -26,5 +26,4 @@ person using the device.
 ## Permission
 
 `android.permission.CAMERA` is required only to use the scanning feature. It
-is declared in the manifest and requested at runtime only after the person
-chooses to scan.
+is declared in the manifest and requested at runtime when the scanner opens.

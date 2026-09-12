@@ -9,7 +9,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.text.LineBreaker;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -58,7 +61,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
                 if (granted) {
                     showScanner();
                 } else {
-                    showHome();
+                    showPermissionMessage();
                 }
             });
     private final ActivityResultLauncher<String> photoPicker = registerForActivityResult(
@@ -78,6 +81,8 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         super.onCreate(savedInstanceState);
         getWindow().setStatusBarColor(color(R.color.night));
         getWindow().setNavigationBarColor(color(R.color.night));
+        // Scanning is the primary task: enter the camera directly. Android still
+        // controls the permission prompt; the app never bypasses that consent.
         requestCameraForScanning();
     }
 
@@ -147,6 +152,16 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         setContentView(root);
     }
 
+    private void showPermissionMessage() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.permission_needed)
+                .setMessage(R.string.camera_permission_explanation)
+                .setNegativeButton(R.string.close, (dialog, which) -> finish())
+                .setPositiveButton(R.string.retry_camera, (dialog, which) -> requestCameraForScanning())
+                .setOnCancelListener(dialog -> finish())
+                .show();
+    }
+
     private void showTransparency() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.transparency_dialog_title)
@@ -198,6 +213,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     private void requestCameraForScanning() {
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
             Toast.makeText(this, getString(R.string.camera_unavailable), Toast.LENGTH_LONG).show();
+            finish();
             return;
         }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -224,11 +240,16 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         TextView brand = text("ETHIC QR SCANNER", 15, Color.WHITE);
         brand.setLetterSpacing(0.1f);
         header.addView(brand, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        Button info = button("ⓘ", Color.TRANSPARENT, color(R.color.teal));
+        info.setTextSize(22);
+        info.setContentDescription(getString(R.string.transparency_dialog_title));
+        info.setOnClickListener(v -> showTransparency());
+        header.addView(info, new LinearLayout.LayoutParams(dp(48), dp(48)));
         Button close = button("×", Color.TRANSPARENT, Color.WHITE);
         close.setTextSize(30);
         close.setContentDescription("Cerrar cámara");
         close.setPadding(dp(10), 0, dp(10), 0);
-        close.setOnClickListener(v -> showHome());
+        close.setOnClickListener(v -> finish());
         header.addView(close, new LinearLayout.LayoutParams(dp(52), dp(48)));
         FrameLayout.LayoutParams headerParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP);
@@ -271,7 +292,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         future.addListener(() -> {
             try {
                 ProcessCameraProvider provider = future.get();
-                int rotation = getDisplay() == null ? Surface.ROTATION_0 : getDisplay().getRotation();
+                int rotation = getWindowManager().getDefaultDisplay().getRotation();
                 Preview preview = new Preview.Builder().setTargetRotation(rotation).build();
                 preview.setSurfaceProvider(previewView.getSurfaceProvider());
                 decoder = new DecodeAnalyzer(content -> runOnUiThread(() -> showResult(content)));
@@ -288,8 +309,8 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
                     }
                 });
             } catch (Exception error) {
-                showHome();
                 Toast.makeText(this, "No fue posible iniciar la cámara.", Toast.LENGTH_LONG).show();
+                finish();
             }
         }, ContextCompat.getMainExecutor(this));
     }
@@ -299,19 +320,38 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         if (camera != null) camera.getCameraControl().enableTorch(false);
         boolean link = isSafeBrowserLink(content);
         String classification = link
-                ? "Enlace detectado. Revísalo antes de abrirlo; la aplicación no comprobará su reputación en internet."
-                : "Contenido detectado. Puedes copiarlo; no se enviará fuera de este teléfono.";
+                ? getString(R.string.link_detected_message)
+                : getString(R.string.content_detected_message);
         String displayed = content.length() > 4000 ? content.substring(0, 4000) + "…" : content;
         LinearLayout result = new LinearLayout(this);
         result.setOrientation(LinearLayout.VERTICAL);
-        TextView explanation = text(classification, 15, color(R.color.muted));
-        explanation.setPadding(0, 0, 0, dp(12));
+        result.setPadding(dp(24), dp(22), dp(24), dp(18));
+        GradientDrawable resultBackground = new GradientDrawable();
+        resultBackground.setColor(color(R.color.night_elevated));
+        resultBackground.setCornerRadius(dp(24));
+        resultBackground.setStroke(dp(1), 0x4D8DE5D0);
+        result.setBackground(resultBackground);
+
+        TextView title = text(getString(R.string.content_detected_title), 24, Color.WHITE);
+        title.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        title.setPadding(0, 0, 0, dp(10));
+        result.addView(title);
+
+        TextView explanation = text(classification, 16, color(R.color.mist));
+        explanation.setPadding(0, 0, 0, dp(16));
         result.addView(explanation);
+
+        LinearLayout valuePanel = new LinearLayout(this);
+        valuePanel.setPadding(dp(14), dp(12), dp(14), dp(12));
+        GradientDrawable valueBackground = new GradientDrawable();
+        valueBackground.setColor(color(R.color.ink));
+        valueBackground.setCornerRadius(dp(14));
+        valuePanel.setBackground(valueBackground);
         TextView value = text(displayed, 17, Color.WHITE);
         value.setTextIsSelectable(true);
         value.setHorizontallyScrolling(false);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            value.setBreakStrategy(Layout.BREAK_STRATEGY_BALANCED);
+            value.setBreakStrategy(LineBreaker.BREAK_STRATEGY_BALANCED);
             value.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
         }
         Linkify.addLinks(value, Linkify.WEB_URLS);
@@ -321,17 +361,49 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         scroll.setFillViewport(false);
         scroll.addView(value, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        result.addView(scroll, new LinearLayout.LayoutParams(
+        valuePanel.addView(scroll, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this)
-                .setTitle("Contenido detectado")
-                .setView(result)
-                .setNegativeButton(getString(R.string.scan_again), (d, w) -> resumeScanning())
-                .setNeutralButton(getString(R.string.copy), (d, w) -> copy(content));
-        if (link) {
-            dialog.setPositiveButton(getString(R.string.open_browser), (d, w) -> openInBrowser(content));
-        }
+        result.addView(valuePanel, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        Button primary = button(link ? getString(R.string.open_browser) : getString(R.string.copy),
+                color(R.color.teal), color(R.color.ink));
+        LinearLayout.LayoutParams primaryParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(52));
+        primaryParams.topMargin = dp(18);
+        result.addView(primary, primaryParams);
+
+        LinearLayout secondary = new LinearLayout(this);
+        secondary.setOrientation(LinearLayout.VERTICAL);
+        secondary.setGravity(Gravity.CENTER_HORIZONTAL);
+        Button scanAgain = outlinedButton(getString(R.string.scan_again));
+        Button copyButton = outlinedButton(getString(R.string.copy));
+        secondary.addView(scanAgain, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(48)));
+        LinearLayout.LayoutParams copyParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(48));
+        copyParams.topMargin = dp(8);
+        secondary.addView(copyButton, copyParams);
+        LinearLayout.LayoutParams secondaryParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(104));
+        secondaryParams.topMargin = dp(8);
+        result.addView(secondary, secondaryParams);
+
+        AlertDialog dialog = new AlertDialog.Builder(this).setView(result).create();
+        primary.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (link) openInBrowser(content); else copy(content);
+        });
+        scanAgain.setOnClickListener(v -> { dialog.dismiss(); resumeScanning(); });
+        copyButton.setOnClickListener(v -> { dialog.dismiss(); copy(content); });
         dialog.setOnCancelListener(d -> resumeScanning());
+        dialog.setOnShowListener(ignored -> {
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.92f);
+                dialog.getWindow().setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+        });
         dialog.show();
     }
 
@@ -402,6 +474,9 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
     private Button button(String label, int backgroundColor, int textColor) {
         Button button = new Button(this);
         button.setAllCaps(false);
+        button.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        button.setIncludeFontPadding(false);
+        button.setMinHeight(dp(48));
         button.setText(label);
         button.setTextColor(textColor);
         button.setTextSize(16);
@@ -412,11 +487,22 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         return button;
     }
 
+    private Button outlinedButton(String label) {
+        Button button = button(label, Color.TRANSPARENT, color(R.color.teal));
+        GradientDrawable outline = new GradientDrawable();
+        outline.setColor(Color.TRANSPARENT);
+        outline.setCornerRadius(dp(18));
+        outline.setStroke(dp(1), color(R.color.teal));
+        button.setBackground(outline);
+        return button;
+    }
+
     private TextView text(String value, int size, int textColor) {
         TextView view = new TextView(this);
         view.setText(value);
         view.setTextColor(textColor);
         view.setTextSize(size);
+        view.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
         view.setIncludeFontPadding(false);
         return view;
     }

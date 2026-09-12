@@ -10,7 +10,8 @@ asked to open a browser.
 ## Privacy commitments
 
 - No account, analytics, advertising, network permission, or embedded web view.
-- Camera access is requested only after the person selects **Escanear código**.
+- The scanner opens directly; Android requests camera access when the scanner
+  starts because the camera is its primary function.
 - A photo can be selected through Android's system picker; it is decoded in
   memory without storage permission and is not saved by the app.
 - Frames are decoded in memory and are not saved or transmitted.
@@ -32,7 +33,21 @@ again before any release or F-Droid submission.
 The name **Ethic QR Scanner** is provisional. A basic web search found no exact
 application-name collision, but that is not a trademark clearance.
 
+## Build from source
+
+This repository includes its Gradle wrapper and can be built without relying on
+another project in the workspace:
+
+```sh
+./gradlew :app:testDebugUnitTest :app:assembleDebug :app:lintDebug
+./gradlew :app:assembleRelease :app:lintVitalRelease
+```
+
+The release APK is unsigned by design; F-Droid builds and signs its own
+artifacts from the published source and metadata.
+
 ## Status
 
-Private local development. It has not been published, released, or submitted
-to F-Droid. Passing a local build does not constitute F-Droid acceptance.
+The source is prepared for public review. A local build passing does not imply
+F-Droid acceptance; maintainers must review licensing, dependencies, metadata
+and reproducibility.

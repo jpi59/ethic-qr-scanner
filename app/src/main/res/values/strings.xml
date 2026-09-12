@@ -4,12 +4,17 @@
     <string name="camera_permission_explanation">The camera is used only while you choose to scan a code. Images and decoded content stay on this device.</string>
     <string name="camera_unavailable">No camera is available on this device.</string>
     <string name="permission_needed">Camera access is required to scan a code.</string>
+    <string name="retry_camera">Try again</string>
+    <string name="close">Close</string>
     <string name="scan_again">Scan again</string>
     <string name="copy">Copy</string>
     <string name="open_browser">Open browser</string>
+    <string name="content_detected_title">Content detected</string>
+    <string name="link_detected_message">Link detected. Review it before opening; the app will not check its reputation online.</string>
+    <string name="content_detected_message">Content detected. You can copy it; it will not be sent outside this phone.</string>
     <string name="reading_photo">Reading the selected photo locally…</string>
     <string name="no_code_title">No code detected</string>
     <string name="no_code_message">No supported QR code or barcode was found in that photo. The image was not saved.</string>
-    <string name="transparency_dialog_title">Transparency</string>
-    <string name="transparency_dialog_message">Permission: CAMERA is requested only when you choose to scan.\n\nData: frames and decoded content stay in memory on this phone. There is no account, tracking, advertising, network permission, or scan history.\n\nLinks: an HTTP(S) link is shown first and opens only after a separate choice. The app does not claim to verify a website’s safety.\n\nLicensing: original app code is GPL-3.0-or-later. CameraX/AndroidX and ZXing Core are credited in the source notices.</string>
+    <string name="transparency_dialog_title">About and privacy</string>
+    <string name="transparency_dialog_message">Permission: CAMERA is requested when the scanner opens because it is required for the main function.\n\nData: frames and decoded content stay in memory on this phone. There is no account, tracking, advertising, network permission, or scan history.\n\nLinks: an HTTP(S) link is shown first and opens only after a separate choice. The app does not claim to verify a website’s safety.\n\nLicensing: original app code is GPL-3.0-or-later. CameraX/AndroidX and ZXing Core are credited in the source notices.</string>
 </resources>

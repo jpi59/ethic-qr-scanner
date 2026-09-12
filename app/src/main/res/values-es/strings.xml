@@ -4,12 +4,17 @@
     <string name="camera_permission_explanation">La cámara se usa solo mientras eliges escanear un código. Las imágenes y el contenido detectado permanecen en este teléfono.</string>
     <string name="camera_unavailable">Este dispositivo no tiene una cámara disponible.</string>
     <string name="permission_needed">Se necesita acceso a la cámara para escanear un código.</string>
+    <string name="retry_camera">Intentar de nuevo</string>
+    <string name="close">Cerrar</string>
     <string name="scan_again">Escanear de nuevo</string>
     <string name="copy">Copiar</string>
     <string name="open_browser">Abrir navegador</string>
+    <string name="content_detected_title">Contenido detectado</string>
+    <string name="link_detected_message">Enlace detectado. Revísalo antes de abrirlo; la app no comprobará su reputación en internet.</string>
+    <string name="content_detected_message">Contenido detectado. Puedes copiarlo; no se enviará fuera de este teléfono.</string>
     <string name="reading_photo">Leyendo la foto localmente…</string>
     <string name="no_code_title">No se detectó ningún código</string>
     <string name="no_code_message">No encontramos un código QR o de barras compatible en esa foto. La imagen no se guardó.</string>
-    <string name="transparency_dialog_title">Transparencia</string>
-    <string name="transparency_dialog_message">Permiso: CAMERA solo se solicita cuando eliges escanear.\n\nDatos: las imágenes y el contenido detectado permanecen en memoria en este teléfono. No hay cuenta, rastreo, anuncios, permiso de red ni historial de escaneos.\n\nEnlaces: un enlace HTTP(S) se muestra primero y solo se abre tras una decisión aparte. La app no afirma verificar la seguridad del sitio.\n\nLicencia: el código original está bajo GPL-3.0-or-later. CameraX/AndroidX y ZXing Core aparecen atribuidos en los avisos del código fuente.</string>
+    <string name="transparency_dialog_title">Información y privacidad</string>
+    <string name="transparency_dialog_message">Permiso: CAMERA se solicita al abrir el escáner porque es necesario para su función principal.\n\nDatos: las imágenes y el contenido detectado permanecen en memoria en este teléfono. No hay cuenta, rastreo, anuncios, permiso de red ni historial de escaneos.\n\nEnlaces: un enlace HTTP(S) se muestra primero y solo se abre tras una decisión aparte. La app no afirma verificar la seguridad del sitio.\n\nLicencia: el código original está bajo GPL-3.0-or-later. CameraX/AndroidX y ZXing Core aparecen atribuidos en los avisos del código fuente.</string>
 </resources>
