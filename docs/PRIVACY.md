@@ -1,5 +1,7 @@
 # Privacy design record
 
+Last reviewed: 2026-09-12, against version 1.0.1 (`versionCode 2`).
+
 ## Data flow
 
 1. The scanner opens as the app's primary function.
@@ -27,3 +29,7 @@ person using the device.
 
 `android.permission.CAMERA` is required only to use the scanning feature. It
 is declared in the manifest and requested at runtime when the scanner opens.
+The release APK also declares the app-scoped
+`org.jpi59.ethicqrscanner.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`, generated
+by AndroidX to protect dynamic receivers. It is not a user-grantable sensitive
+permission and does not provide network, storage, location or microphone access.
