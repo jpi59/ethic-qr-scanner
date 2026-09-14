@@ -24,8 +24,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.text.util.Linkify;
-import android.text.method.LinkMovementMethod;
 import android.text.Layout;
 
 import java.util.concurrent.ExecutorService;
@@ -51,7 +49,7 @@ import com.google.zxing.common.HybridBinarizer;
 
 /**
  * A local-only QR and barcode scanner. Decoded text is never sent to a service
- * and web links are never opened without a second, explicit user action.
+ * and web links are never opened without an explicit, informed confirmation.
  */
 public final class MainActivity extends androidx.activity.ComponentActivity {
     private static final int PADDING = 24;
@@ -354,9 +352,9 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
             value.setBreakStrategy(LineBreaker.BREAK_STRATEGY_BALANCED);
             value.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
         }
-        Linkify.addLinks(value, Linkify.WEB_URLS);
-        value.setMovementMethod(LinkMovementMethod.getInstance());
-        value.setLinkTextColor(color(R.color.teal));
+        // Deliberately do not turn detected URLs into inline links. A QR payload
+        // is untrusted input; opening it is only possible through the separate
+        // review-and-confirm flow below.
         ResultScrollView scroll = new ResultScrollView(this);
         scroll.setFillViewport(false);
         scroll.addView(value, new ViewGroup.LayoutParams(
@@ -366,7 +364,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         result.addView(valuePanel, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        Button primary = button(link ? getString(R.string.open_browser) : getString(R.string.copy),
+        Button primary = button(link ? getString(R.string.review_link) : getString(R.string.copy),
                 color(R.color.teal), color(R.color.ink));
         LinearLayout.LayoutParams primaryParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(52));
@@ -392,7 +390,7 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         AlertDialog dialog = new AlertDialog.Builder(this).setView(result).create();
         primary.setOnClickListener(v -> {
             dialog.dismiss();
-            if (link) openInBrowser(content); else copy(content);
+            if (link) showBrowserConfirmation(content); else copy(content);
         });
         scanAgain.setOnClickListener(v -> { dialog.dismiss(); resumeScanning(); });
         copyButton.setOnClickListener(v -> { dialog.dismiss(); copy(content); });
@@ -427,11 +425,24 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         resumeScanning();
     }
 
+    private void showBrowserConfirmation(String address) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.open_link_title)
+                .setMessage(getString(R.string.open_link_message, address))
+                .setNegativeButton(R.string.cancel, (dialog, which) -> resumeScanning())
+                .setPositiveButton(R.string.open_browser, (dialog, which) -> openInBrowser(address))
+                .setOnCancelListener(dialog -> resumeScanning())
+                .show();
+    }
+
     private boolean isSafeBrowserLink(String value) {
-        Uri uri = Uri.parse(value.trim());
+        // Keep the destination bounded so that a person can meaningfully review
+        // the complete value in the confirmation dialog before it is delegated.
+        if (value.length() > 2048) return false;
+        Uri uri = Uri.parse(value);
         String scheme = uri.getScheme();
         return ("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme))
-                && uri.getHost() != null;
+                && uri.getHost() != null && !uri.getHost().isEmpty();
     }
 
     private void toggleTorch() {

@@ -4,8 +4,9 @@ Ethic QR Scanner is an original Android QR and barcode scanner built around a
 simple rule: decoding a code must not silently trigger an external action.
 
 It scans using the device camera, decodes locally, and presents the result for
-the person to review. HTTP(S) links require a separate choice before Android is
-asked to open a browser.
+the person to review. HTTP(S) links are rendered as inactive text; opening one
+requires a separate confirmation that shows the complete destination before
+Android is asked to open a browser.
 
 ## Privacy commitments
 
@@ -15,6 +16,9 @@ asked to open a browser.
 - A photo can be selected through Android's system picker; it is decoded in
   memory without storage permission and is not saved by the app.
 - Frames are decoded in memory and are not saved or transmitted.
+- A decoded HTTP(S) link is never made tappable inline. The app can delegate
+  only URLs up to 2,048 characters after an explicit confirmation; longer or
+  other payloads remain available to copy, not to open from the app.
 - No scan history is included in version 1.0.1.
 - Copying a result uses Android's local clipboard service; the system may expose
   clipboard data to the current keyboard or other system components according
@@ -49,7 +53,8 @@ another project in the workspace:
 ```
 
 Version `1.0.1` has a [production-signed APK and SHA-256 checksum on its GitHub
-release](https://github.com/jpi59/ethic-qr-scanner/releases/tag/v1.0.1). F-Droid
+release](https://github.com/jpi59/ethic-qr-scanner/releases/tag/v1.0.1). Version
+`1.0.2` is pending verification and release. F-Droid
 builds and signs its own artifacts from the published source and metadata, so a
 future F-Droid APK will use a different signature.
 
