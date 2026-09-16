@@ -5,3 +5,10 @@ local.properties
 *.iml
 .idea/
 /tmp/
+keystore.properties
+key.properties
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
