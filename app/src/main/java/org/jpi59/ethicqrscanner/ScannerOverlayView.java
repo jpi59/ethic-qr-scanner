@@ -86,6 +86,6 @@ final class ScannerOverlayView extends View {
         paint.setColor(Color.WHITE);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(Math.max(14f, w / 24f));
-        canvas.drawText("ENFOQUE LOCAL", w / 2f, top - size * 0.08f, paint);
+        canvas.drawText("LOCAL FOCUS", w / 2f, top - size * 0.08f, paint);
     }
 }

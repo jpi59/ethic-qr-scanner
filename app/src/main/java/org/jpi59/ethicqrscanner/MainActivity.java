@@ -235,8 +235,9 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.setPadding(dp(20), dp(14), dp(20), dp(14));
         header.setBackgroundColor(0xCC0C1C20);
-        TextView brand = text("ETHIC QR SCANNER", 15, Color.WHITE);
-        brand.setLetterSpacing(0.1f);
+        TextView brand = text("Ethic QR Scanner", 20, Color.WHITE);
+        brand.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        brand.setGravity(Gravity.CENTER);
         header.addView(brand, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         Button info = button("ⓘ", Color.TRANSPARENT, color(R.color.teal));
         info.setTextSize(22);
