@@ -2,6 +2,15 @@ plugins {
     id 'com.android.application'
 }
 
+// Release credentials are provided only through the invoking environment.
+// This repository never stores keystore locations, aliases, or passwords.
+def releaseKeystorePath = System.getenv('KEYSTORE_PATH')
+def releaseKeyAlias = System.getenv('KEY_ALIAS')
+def releaseStorePassword = System.getenv('STORE_PASSWORD')
+def releaseKeyPassword = System.getenv('KEY_PASSWORD')
+def hasReleaseSigning = [releaseKeystorePath, releaseKeyAlias, releaseStorePassword, releaseKeyPassword]
+        .every { it != null && !it.isEmpty() }
+
 android {
     namespace 'org.jpi59.ethicqrscanner'
     compileSdk 36
@@ -14,12 +23,26 @@ android {
         versionName '1.0.2'
     }
 
+    if (hasReleaseSigning) {
+        signingConfigs {
+            release {
+                storeFile file(releaseKeystorePath)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             vcsInfo { include = false }
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
@@ -27,6 +50,7 @@ android {
         includeInApk = false
         includeInBundle = false
     }
+
 }
 
 dependencies {
