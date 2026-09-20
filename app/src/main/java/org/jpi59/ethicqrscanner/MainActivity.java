@@ -96,9 +96,24 @@ public final class MainActivity extends androidx.activity.ComponentActivity {
         root.addView(content, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
+        LinearLayout topBar = new LinearLayout(this);
+        topBar.setOrientation(LinearLayout.HORIZONTAL);
+        topBar.setGravity(Gravity.CENTER_VERTICAL);
+
+        android.widget.ImageButton btnMenu = new android.widget.ImageButton(this);
+        btnMenu.setImageResource(R.drawable.ic_settings_menu);
+        btnMenu.setBackground(null);
+        btnMenu.setColorFilter(color(R.color.teal));
+        btnMenu.setContentDescription(getString(R.string.menu_title));
+        btnMenu.setOnClickListener(v -> EthicEcosystemMenu.show(this, true));
+        topBar.addView(btnMenu, new LinearLayout.LayoutParams(dp(44), dp(44)));
+
         TextView eyebrow = text("ETHIC  /  LOCAL ONLY", 12, color(R.color.teal));
         eyebrow.setLetterSpacing(0.14f);
-        content.addView(eyebrow);
+        LinearLayout.LayoutParams eyebrowParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        eyebrowParams.setMarginStart(dp(8));
+        topBar.addView(eyebrow, eyebrowParams);
+        content.addView(topBar);
 
         TextView title = text("QR Scanner", 45, Color.WHITE);
         title.setPadding(0, dp(8), 0, 0);
