@@ -1,6 +1,6 @@
 # Dependency and licence record
 
-Last reviewed: 2026-09-12 for release `1.0.1` (`versionCode 2`).
+Last reviewed: 2026-09-12 for release `1.0.3` (`versionCode 4`).
 
 ## Scope
 

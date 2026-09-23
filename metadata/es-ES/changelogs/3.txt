@@ -1,0 +1,1 @@
+Los enlaces decodificados de códigos QR ahora requieren revisión explícita y una confirmación separada antes de abrir un navegador.

@@ -1,6 +1,6 @@
 # Privacy design record
 
-Last reviewed: 2026-09-12, against version 1.0.1 (`versionCode 2`).
+Last reviewed: 2026-09-12, against version 1.0.3 (`versionCode 4`).
 
 ## Data flow
 

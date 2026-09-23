@@ -1,0 +1,1 @@
+Lanzamiento inicial: escáner de códigos QR y de barras local, sin conexión y sin permisos de red.

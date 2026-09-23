@@ -1,0 +1,1 @@
+Links decoded from QR codes now require explicit review and a separate confirmation before a browser can be opened.

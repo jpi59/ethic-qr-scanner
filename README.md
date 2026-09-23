@@ -19,7 +19,7 @@ Android is asked to open a browser.
 - A decoded HTTP(S) link is never made tappable inline. The app can delegate
   only URLs up to 2,048 characters after an explicit confirmation; longer or
   other payloads remain available to copy, not to open from the app.
-- No scan history is included in version 1.0.1.
+- No scan history is included in version 1.0.3.
 - Copying a result uses Android's local clipboard service; the system may expose
   clipboard data to the current keyboard or other system components according
   to the device's own privacy rules.
@@ -53,7 +53,7 @@ another project in the workspace:
 ```
 
 Version `1.0.1` has a [production-signed APK and SHA-256 checksum on its GitHub
-release](https://github.com/jpi59/ethic-qr-scanner/releases/tag/v1.0.1). Version
+release](https://github.com/jpi59/ethic-qr-scanner/releases/tag/v1.0.3). Version
 `1.0.2` is pending verification and release. F-Droid
 builds and signs its own artifacts from the published source and metadata, so a
 future F-Droid APK will use a different signature.

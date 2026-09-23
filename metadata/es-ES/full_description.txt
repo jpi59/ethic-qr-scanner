@@ -1,0 +1,5 @@
+Ethic QR Scanner lee códigos QR y códigos de barras comunes usando la cámara del dispositivo.
+
+El contenido decodificado permanece en el dispositivo. La aplicación no tiene cuentas, rastreo, publicidad ni permisos de red.
+
+Los enlaces se muestran para revisión y requieren una elección separada antes de que se pueda abrir un navegador. La aplicación no pretende juzgar si un enlace es seguro.
